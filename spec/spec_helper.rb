@@ -27,7 +27,7 @@ PAYLOAD = {
 def get_response_object
   # Gets HTTParty response object
   VCR.use_cassette('successful_send') do
-    HTTParty.post(Smtp2go::SEND_ENDPOINT, PAYLOAD)
+    HTTParty.post(Smtp2go::SEND_ENDPOINT, **PAYLOAD)
   end
 end
 
@@ -39,13 +39,13 @@ end
 def get_successful_response
   smtp2go_client = get_client
   VCR.use_cassette('successful_send') do
-    smtp2go_client.send(PAYLOAD)
+    smtp2go_client.send(**PAYLOAD)
   end
 end
 
 def get_failed_response
   smtp2go_client = get_client
   VCR.use_cassette('failed_send') do
-    smtp2go_client.send(PAYLOAD)
+    smtp2go_client.send(**PAYLOAD)
   end
 end

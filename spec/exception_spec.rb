@@ -10,7 +10,7 @@ describe Smtp2go::Smtp2goAPIKeyException do
   it "raises a salient exception message" do
     exception = described_class.new
     expect(exception.message).to include(
-      'SMTP2GO_API_KEY', 'Environment Variable')
+      'SMTP2GO_API_KEY', 'environment variable', 'initialization option')
   end
 end
 
@@ -19,6 +19,15 @@ describe Smtp2go::Smtp2goParameterException do
 
   it "raises a salient exception message" do
     exception = described_class.new
-    expect(exception.message).to include('html', 'text')
+    expect(exception.message).to include('html', 'text', 'template')
+  end
+end
+
+describe Smtp2go::Smtp2goTemplateException do
+  it { expect(described_class).to be < Smtp2go::Smtp2goBaseException }
+
+  it "raises a salient exception message" do
+    exception = described_class.new
+    expect(exception.message).to include('template', 'id', 'data')
   end
 end

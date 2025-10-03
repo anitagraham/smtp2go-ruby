@@ -8,33 +8,40 @@ module Smtp2go
   class Smtp2goClient
     # Client to handle API interfacing
     attr_reader :headers, :send_endpoint
-    def initialize
-      @api_key = ENV['SMTP2GO_API_KEY']
-      @headers = HEADERS
+
+    def initialize(api_key: ENV['SMTP2GO_API_KEY'])
+      @api_key = api_key
       @send_endpoint = SEND_ENDPOINT
+      @headers = {**HEADERS, "X-SMTP2-API-Key" => @api_key}
       raise Smtp2goAPIKeyException unless @api_key
     end
 
     # @param sender [String] the from email address
     # @param recipients [Array <String>] the email address of the recipient(s)
     # @param subject [String] the email subject
-    # @param text [String] the email text content (optional if html is passed)
-    # @param html [String] the email html content (optional if text is passed)
+    # @param text [String] the email text content (optional if html or template is passed)
+    # @param html [String] the email html content (optional if text or template is passed)
+    # @param template [hash] template{:id, :dats} (optional if text or html is passed)
+    #
     # @return [Smtp2goResponse] response object
-    def send(sender:, recipients:, subject:, text: nil, html: nil)
-      raise Smtp2goParameterException unless [html, text].any?
+    def send(sender:, recipients:, subject:, template: {}, text: nil, html: nil)
+      raise Smtp2goParameterException unless [html, text, template].any?
+      raise Smtp2goTemplateException unless (template.empty? || (template.keys - TEMPLATE_KEYS).empty?)
       payload = {
-        api_key: @api_key,
         sender: sender,
         to: recipients,
         subject: subject,
         text_body: text,
-        html_body: html
-      }
+        html_body: html,
+        template_id: template[:id] || nil,
+        template_data: template[:data] || nil
+      }.compact
+
       response = HTTParty.post(
-        @send_endpoint,
-        body: JSON.dump(payload),
-        headers: @headers
+        send_endpoint,
+        { body: JSON.dump(payload),
+          headers: {**HEADERS, }
+        }
       )
       Smtp2goResponse.new response
     end
