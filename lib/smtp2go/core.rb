@@ -12,7 +12,7 @@ module Smtp2go
     def initialize(api_key: ENV['SMTP2GO_API_KEY'])
       @api_key = api_key
       @send_endpoint = SEND_ENDPOINT
-      @headers = {**HEADERS, "X-SMTP2-API-Key" => @api_key}
+      @headers = {**HEADERS, "X-Smtp2go-Api-Key" => @api_key}
       raise Smtp2goAPIKeyException unless @api_key
     end
 
