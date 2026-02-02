@@ -10,10 +10,9 @@ module Smtp2go
     attr_reader :headers, :send_endpoint
 
     def initialize(api_key: ENV['SMTP2GO_API_KEY'])
-      @api_key = api_key
       @send_endpoint = SEND_ENDPOINT
-      @headers = {**HEADERS, "X-Smtp2go-Api-Key" => @api_key}
-      raise Smtp2goAPIKeyException unless @api_key
+      @headers = {**HEADERS, "X-Smtp2go-Api-Key" => api_key}
+      raise Smtp2goAPIKeyException unless api_key
     end
 
     # @param sender [String] the from email address
@@ -40,7 +39,7 @@ module Smtp2go
       response = HTTParty.post(
         send_endpoint,
         { body: JSON.dump(payload),
-          headers: {**HEADERS, }
+          headers: {**headers }
         }
       )
       Smtp2goResponse.new response

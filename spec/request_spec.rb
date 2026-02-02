@@ -49,7 +49,7 @@ describe Smtp2go::Smtp2goClient do
 
   it 'attaches version headers to requests' do
     expect(HTTParty).to receive(:post).with(
-      any_args, hash_including(headers: Smtp2go::HEADERS)
+      any_args, hash_including(headers: hash_including(Smtp2go::HEADERS) )
     ).and_return get_response_object
     VCR.use_cassette('successful_send') do
       @smtp2go_client.send(**PAYLOAD)
@@ -62,7 +62,7 @@ describe Smtp2go::Smtp2goClient do
        'Content-Type' => Smtp2go::HEADERS['Content-Type'])
 
     expect(HTTParty).to receive(:post).with(
-      any_args, hash_including(headers: Smtp2go::HEADERS)
+      any_args, hash_including(headers: hash_including(Smtp2go::HEADERS))
     ).and_return get_response_object
     VCR.use_cassette('successful_send') do
       @smtp2go_client.send(**PAYLOAD)
