@@ -7,6 +7,7 @@ describe Smtp2go::Smtp2goClient do
 
   subject { @smtp2go_client }
   it { should respond_to :send }
+  it { should respond_to :batch }
 
   it 'has a version number' do
     expect(Smtp2go::VERSION).not_to be nil
@@ -22,6 +23,20 @@ describe Smtp2go::Smtp2goClient do
   it 'performs a failed send' do
     VCR.use_cassette('failed_send') do
       @smtp2go_client.send(**PAYLOAD)
+    end
+  end
+
+  it 'performs a successful batch' do
+    VCR.use_cassette('successful_batch') do
+      response = @smtp2go_client.batch(**PAYLOAD)
+      expect(response.success?).to be true
+    end
+  end
+
+  it'performs a failed batch' do
+    VCR.use_cassette('failed_batch') do
+      response = @smtp2go_client.batch(**PAYLOAD)
+      expect(response.success?).to be true
     end
   end
 
@@ -120,5 +135,9 @@ describe Smtp2go::Smtp2goClient do
       response = @smtp2go_client.send(**PAYLOAD)
       expect(response.success?).to be true
     end
+  end
+
+  it 'sends an email to a batch of clients' do
+
   end
 end
